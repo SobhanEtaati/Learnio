@@ -14,15 +14,12 @@ from .models import Students, Teachers, Classes, Student_Classes, Sessions
 # Register API
 class RegisterAPI(generics.GenericAPIView):
     serializer_class = RegisterSerializer
+    
     def post(self, request, *args, **kwargs):
         data = request.data
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-
-        print("data is ...............................")
-        print(data['role'])
-        print(data['username'])
 
         id = UserSerializer(user, context=self.get_serializer_context()).data['id']
         
@@ -30,14 +27,12 @@ class RegisterAPI(generics.GenericAPIView):
             s = Students(student_id= id, username=data['username'], first_name=data['first_name'], 
                 last_name=data['last_name'], email=data['email'])
             s.save(force_insert=True)
-            print("adding student to table")
 
 
         if(data['role'] == "2"):
             t = Teachers(teacher_id=id, username=data['username'], first_name=data['first_name'],
                         last_name=data['last_name'], email=data['email'])
             t.save(force_insert=True)
-            print("adding teacher to table")
 
 
         return Response({
@@ -60,9 +55,6 @@ class LoginAPI(KnoxLoginView):
 
 # Cahnge Password API
 class ChangePasswordView(generics.UpdateAPIView):
-    """
-    An endpoint or changing password.
-    """
     serializer_class = ChangePasswordSerializer
     model = User
     permission_classes = (IsAuthenticated,)
